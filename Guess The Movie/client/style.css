@@ -1,0 +1,57 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap');
+
+:root {
+    --text: #e4eae2;
+    --background: #0b0e0a;
+    --primary: #b4c6b0;
+    --secondary: #46615b;
+    --accent: #85a4a8;
+    --font-satoshi: 'Satoshi', sans-serif;
+}
+
+::selection {
+    background-color: var(--accent);
+    color: var(--text);
+}
+
+body {
+    background-color: var(--background);
+    font-family: var(--font-satoshi);
+    margin: 0px;
+}
+
+h1 {
+    color: var(--primary);
+    font-size: 3rem;
+    text-align: center;
+}
+
+.navigation {
+    padding: 10px 100px 10px 100px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    color: var(--secondary);
+    background-color: color-mix(in srgb, var(--secondary) 5%, transparent);
+}
+
+#nav-menu {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--secondary);
+}
+
+#nav-menu:hover {
+    cursor: pointer;
+}
+
+.main-container {
+    margin: 50px 200px 50px 200px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
