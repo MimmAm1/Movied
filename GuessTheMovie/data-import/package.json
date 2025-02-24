@@ -1,8 +1,8 @@
 {
-  "name": "tnm115-project-material",
+  "name": "movied-project-material",
   "version": "1.0.0",
   "description": "Course project datasets, i.e., IMDb, BechdelTest, and ActorInfo, for JSON data import to MongoDB data storage system.",
-  "author": "Nico Reski, Katerina Vrotsou",
+  "author": "Axel Jakobsson, Nils Marion",
   "dependencies": {
     "mongodb": "6.12.0"
   }
