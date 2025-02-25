@@ -18,8 +18,6 @@ const dbClient = new MongoClient(dbServerUrl);
 const dbName = "tnm115-project";
 const dbCollectionName = "imdb";
 
-console.log("hello");
-
 const server = http.createServer(async (req, res) => {
 
     console.log("Incoming request:", req.method, req.url);
@@ -43,13 +41,24 @@ const server = http.createServer(async (req, res) => {
         console.log("Path components:", pathComponents);
 
 
-        if (req.method === "GET") {
+        if (req.method === "GET" && pathComponents[1] === "random-movie") {
+            const movie = await getRandomMovie(collection);
+            if (!movie) return sendError(res, 404, "Ingen film hittades.");
+            return sendResponse(res, 200, "application/json", JSON.stringify(movie));
+        }
 
-            if (pathComponents[1] === "random-movie") {
-                const movie = await getRandomMovie(collection);
-                if (!movie) return sendError(res, 404, "Ingen film hittades.");
-                return sendResponse(res, 200, "application/json", JSON.stringify(movie));
-            }
+        if (req.method === "GET" && pathComponents[1] === "get-movie-list") {
+            const movies = await collection
+                .find({
+                    rating: { $gte: 7.5 },
+                    year: { $gt: 1960 },
+                    votes: { $gte: 40000 }
+                })
+                .project({ name: 1, _id: 0 }) // Only return movie names
+                .toArray();
+
+            console.log(`Loaded ${movies.length} movies for autocomplete.`); // ✅ Log movie count
+            return sendResponse(res, 200, "application/json", JSON.stringify(movies));
         }
 
         if (req.method === "POST" && pathComponents[1] === "guess") {
@@ -109,7 +118,7 @@ async function getRandomMovie(collection) {
 
     const randomIndex = Math.floor(Math.random() * count);
     const movie = await collection.findOne(
-        { rating: { $gte: 7.5 }, year: { $gt: 1960 }, votes: { $gte: 40000 } },
+        { rating: { $gte: 7.5 }, year: { $gt: 1970 }, votes: { $gte: 40000 } },
         { skip: randomIndex }
     );
 
@@ -168,10 +177,10 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
 
     const isCorrect = movie.name.toLowerCase() === guess.toLowerCase();
     if (isCorrect) {
-        return { success: true, message: "Rätt svar!", clues: [] };
+        return { success: true, message: "Rätt svar!" };
     }
 
-    // Get clues in the correct order
+    // Get all clues in the right order
     const keywords = extractKeywords(movie.description);
     const clues = [
         `Keywords: ${keywords.join(", ")}`,
@@ -182,14 +191,24 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
         `Actors: ${movie.star.join(", ")}`
     ];
 
-    // Reveal the next clue, if available
-    const nextClueIndex = Math.min(currentClueIndex + 1, clues.length - 1);
+    // If all clues have been used, send game over message
+    if (currentClueIndex >= clues.length - 1) {
+        console.log(movie.name);
+        return {
+            success: false,
+            message: "Game over!",
+            correctAnswer: movie.name // Send the correct movie name
+        };
+    }
+
+    // Otherwise, return the next clue
     return {
         success: false,
         message: "Fel gissning.",
-        clues: clues.slice(0, nextClueIndex + 1), // Send clues up to the current index
-        currentClueIndex: nextClueIndex
+        clues: clues.slice(0, currentClueIndex + 1),
+        currentClueIndex: currentClueIndex + 1
     };
+
 }
 
 
