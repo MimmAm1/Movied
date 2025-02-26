@@ -43,6 +43,7 @@ const server = http.createServer(async (req, res) => {
 
         if (req.method === "GET" && pathComponents[1] === "random-movie") {
             const movie = await getRandomMovie(collection);
+            //console.log(movie);
             if (!movie) return sendError(res, 404, "Ingen film hittades.");
             return sendResponse(res, 200, "application/json", JSON.stringify(movie));
         }
@@ -68,7 +69,7 @@ const server = http.createServer(async (req, res) => {
                 try {
                     const { movieId, guess, currentClueIndex } = JSON.parse(body);
                     if (!movieId || !guess || currentClueIndex === undefined) {
-                        return sendError(res, 400, "movieId, guess, and currentClueIndex krävs.");
+                        return sendError(res, 400, "movieId, guess, and currentClueIndex is required.");
                     }
                     const result = await checkGuess(collection, movieId, guess, currentClueIndex);
                     return sendResponse(res, 200, "application/json", JSON.stringify(result));
@@ -117,6 +118,8 @@ async function getRandomMovie(collection) {
     if (count === 0) return null;
 
     const randomIndex = Math.floor(Math.random() * count);
+
+    // gör while loop
     const movie = await collection.findOne(
         { rating: { $gte: 7.5 }, year: { $gt: 1970 }, votes: { $gte: 40000 } },
         { skip: randomIndex }
@@ -137,7 +140,7 @@ async function getRandomMovie(collection) {
 
     return {
         id: movie._id,
-        name: movie.name, // Keep the answer in the backend
+        //name: movie.name, // Keep the answer in the backend
         clues,
         currentClueIndex: 0 // Start with the first clue
     };
