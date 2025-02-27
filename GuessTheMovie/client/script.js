@@ -11,6 +11,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     await fetchMovieList(); // Load movie list once
     startGame();
 
+
+//-----------------------------Experimentellt-----------------------------//
+
+    if (document.querySelector("#scoreboard")) {
+        loadScoreboard();
+    }
+
+//___________________________________________________________________________//
+
+
     // Add event listener to the guess button
     document.getElementById("submit-guess").addEventListener("click", submitGuess);
 });
@@ -147,3 +157,35 @@ document.getElementById("guess-field").addEventListener("input", function () {
         });
     });
 });
+
+
+
+//--------------------------------Exprimentellt-----------------------------------//
+async function loadScoreboard() {
+    try {
+        const response = await fetch(`${serverURL}/scoreboard`);
+        if (!response.ok) throw new Error("Failed to load scoreboard");
+
+        const scores = await response.json();
+        updateScoreboard(scores);
+    } catch (error) {
+        console.error("⚠️ Error loading scoreboard:", error);
+    }
+}
+
+function updateScoreboard(scores) {
+    const tbody = document.querySelector("#scoreboard tbody");
+    tbody.innerHTML = "";
+
+    scores.forEach((player, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${player.name}</td>
+            <td>${player.score}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+//__________________________________________________________________________________//
