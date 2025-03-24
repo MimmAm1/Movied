@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="main.css">
+    <script src="script.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <title>Movied</title>
 </head>
+
 <body>
     <div class="navigation">
-        <h2 id="nav-title"><a href="daily.html">Movied</a></h2>
-        <button id="nav-menu"><i class="fa-solid fa-bars"></i></button>
+        <h2 id="nav-title"><a href="main.html">Movied</a></h2>
+        <div id="nav-icon3" onclick="navOpen()">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div class="nav-item-container">
+        <nav class="nav">
+            <ul>
+                <li><a href="main.html" id="active-page">Start page</a></li>
+                <li><a href="daily.html">Daily</a></li>
+                <li><a href="endless.html">Unlimited</a></li>
+            </ul>
+        </nav>
     </div>
 
     <div class="main-container">
-        <button class="daily"><a href="daily.html"><i class="fa-regular fa-clock"></i> Daily Challenge</a></button>
-        <button class="endless"><a href="endless.html"><i class="fa-solid fa-infinity"></i> Unlimited</a></button>
+        <a href="daily.html"><button class="daily"><i class="fa-regular fa-clock"></i> Daily Challenge</button></a>
+        <a href="endless.html"><button class="endless"><i class="fa-solid fa-infinity"></i> Unlimited</button></a>
     </div>
 </body>
+
 </html>

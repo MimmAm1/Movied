@@ -87,22 +87,27 @@
 #suggestions-box {
     position: relative;
     width: 50%;
-    background: white;
+    background: var(--secondary);
+    scrollbar-color: var(--accent) transparent;
     border: none;
     border-top: none;
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
+    border-radius: 3px;
+}
+
+.suggestion:last-child {
+    border-bottom: 0px !important;
 }
 
 .suggestion {
     padding: 10px;
     cursor: pointer;
-    border-bottom: 1px solid #ddd;
-    color: var(--background);
+    border-bottom: 1px solid var(--text);
+    color: var(--text);
 }
 
 .suggestion:hover {
-    background: #f0f0f0;
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
-

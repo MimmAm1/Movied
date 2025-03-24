@@ -78,7 +78,7 @@ async function submitGuess() {
         if (result.success) {
             currentClueIndex = clues.length; // Show all clues
             updateClues();
-            showMessage(`✅ Correct! The movie was <strong>${userGuess}</strong>`, "success");
+            showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success");
             document.getElementById("guess-field").disabled = true;
             document.getElementById("submit-guess").disabled = true;
         } else {
@@ -87,21 +87,22 @@ async function submitGuess() {
             // If this is the last clue (Actors), allow one final guess
             if (currentClueIndex === clues.length - 1) {
                 updateClues();
-                showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> This is your last chance! Final clue: <strong>Actors</strong>.`, "error");
+                document.getElementById('guess-field').innterHTML = ""; // Clear input field
                 return;
             }
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
-                showMessage(`❌ Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
                 document.getElementById("guess-field").disabled = true;
                 document.getElementById("submit-guess").disabled = true;
                 return;
             }
 
             updateClues();
-            showMessage("❌ Wrong guess! Here's another clue.", "error");
+            showMessage(`<i class="fa-solid fa-xmark"></i> Wrong guess! Here's another clue.`, "error");
         }
     } catch (error) {
         console.error("Error submitting guess:", error);
@@ -189,3 +190,23 @@ function updateScoreboard(scores) {
 }
 
 //__________________________________________________________________________________//
+
+function navOpen() {
+    let navMenu = document.querySelector(".nav-item-container");
+    let navIcon = document.getElementById("nav-icon3");
+
+    let nav = document.querySelector(".nav");
+
+    if (!navIcon.classList.contains("open")) {
+        navIcon.classList.add("open");
+        navMenu.classList.add("active");
+
+        nav.style.backgroundColor = "color-mix(in srgb, var(--background) 75%, transparent)";
+        navMenu.style.backgroundColor = "color-mix(in srgb, var(--background) 75%, transparent)";
+    } else {
+        navIcon.classList.remove("open");
+        navMenu.classList.remove("active");
+        nav.style.backgroundColor = "color-mix(in srgb, var(--background) 50%, transparent)";
+        navMenu.style.backgroundColor = "color-mix(in srgb, var(--background) 50%, transparent)";
+    }
+}
