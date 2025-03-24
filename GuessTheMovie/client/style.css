@@ -6,30 +6,47 @@
     --primary: #3a344b;
     --secondary: #b79aad;
     --accent: #8c6370;
-  }
-  :root[data-theme="dark"] {
+    --font-satoshi: 'Satoshi', sans-serif;
+}
+
+:root[data-theme="dark"] {
     --text: #ebe9f0;
     --background: #0c0b0f;
     --primary: #b9b3ca;
     --secondary: #64475a;
     --accent: #9b727f;
-  }
+    --font-satoshi: 'Satoshi', sans-serif;
+}
 
 ::selection {
     background-color: var(--accent);
     color: var(--text);
 }
 
+html {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--accent) transparent;
+}
+
 body {
     background-color: var(--background);
     font-family: var(--font-satoshi);
     margin: 0px;
+    overflow-y: auto;
 }
 
 h1 {
     color: var(--primary);
     font-size: 3rem;
     text-align: center;
+}
+
+#nav-title {
+    text-decoration: none;
+    color: inherit;
+    width: fit-content;
+    font-size: 1.5rem;
+    margin: 20px 0;
 }
 
 .navigation {
@@ -137,14 +154,14 @@ h1 {
 }
 
 .nav-item-container.active {
-    transform: translateX(0);    
+    transform: translateX(0);
 }
 
 .nav {
-    padding: 60px 20px;
+    padding: 60px 40px;
 }
 
-.nav p{
+.nav p {
     line-break: auto;
 }
 
@@ -160,7 +177,7 @@ h1 {
 
 .nav a {
     text-decoration: none;
-    color: var(--accent);
+    color: var(--primary);
     font-size: 1.5rem;
     transition: color 0.3s;
     font-weight: 700;
@@ -171,7 +188,7 @@ h1 {
 }
 
 .nav a#active-page {
-    text-decoration: underline;
+    color: var(--accent) !important;
     font-weight: 800;
 }
 
@@ -186,13 +203,15 @@ a {
     display: flex;
     flex-direction: row;
     gap: 5px;
+    white-space: nowrap;
 }
 
-a:hover{
+a:hover {
     cursor: pointer;
 }
 
 a span {
-    display: block;
+    display: flex;
     width: 2.5rem;
+    margin: auto 0;
 }

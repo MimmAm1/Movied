@@ -206,22 +206,35 @@ function updateScoreboard(scores) {
 //__________________________________________________________________________________//
 
 function navOpen() {
-    let navMenu = document.querySelector(".nav-item-container");
-    let navIcon = document.getElementById("nav-icon3");
+    const navMenu = document.querySelector(".nav-item-container");
+    const navIcon = document.getElementById("nav-icon3");
+    const nav = document.querySelector(".nav");
 
-    let nav = document.querySelector(".nav");
+    const open = !navIcon.classList.contains("open");
 
-    if (!navIcon.classList.contains("open")) {
-        navIcon.classList.add("open");
-        navMenu.classList.add("active");
+    navIcon.classList.toggle("open", open);
+    navMenu.classList.toggle("active", open);
 
+    if (open) {
         nav.style.backgroundColor = "color-mix(in srgb, var(--accent) 0%, transparent)";
         navMenu.style.backgroundColor = "color-mix(in srgb, var(--accent) 50%, transparent)";
+        document.addEventListener("click", handleOutsideClick);
     } else {
-        navIcon.classList.remove("open");
-        navMenu.classList.remove("active");
         nav.style.backgroundColor = "color-mix(in srgb, var(--accent) 0%, transparent)";
         navMenu.style.backgroundColor = "color-mix(in srgb, var(--accent) 10%, transparent)";
+        document.removeEventListener("click", handleOutsideClick);
+    }
+}
+
+function handleOutsideClick(e) {
+    const navMenu = document.querySelector(".nav-item-container");
+    const navIcon = document.getElementById("nav-icon3");
+
+    if (!navMenu.contains(e.target) && !navIcon.contains(e.target)) {
+        navIcon.classList.remove("open");
+        navMenu.classList.remove("active");
+        navMenu.style.backgroundColor = "color-mix(in srgb, var(--accent) 10%, transparent)";
+        document.removeEventListener("click", handleOutsideClick);
     }
 }
 
