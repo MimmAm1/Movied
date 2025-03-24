@@ -30,9 +30,9 @@ async function fetchMovieList() {
     try {
         const response = await fetch(`${serverURL}/get-movie-list`);
         filteredMovies = await response.json();
-        console.log(`✅ Movie list loaded: ${filteredMovies.length} movies.`);
+        console.log(`Movie list loaded: ${filteredMovies.length} movies.`);
     } catch (error) {
-        console.error("⚠️ Error fetching movie list:", error);
+        console.error("Error fetching movie list:", error);
     }
 }
 
@@ -44,8 +44,9 @@ async function startGame() {
 
         const movie = await response.json();
         currentMovieId = movie.id;
-        clues = movie.clues;
-        currentClueIndex = 0; // Start with the first clue
+        clues = [movie.clues[0]]; // Endast första ledtråden visas i början
+        currentClueIndex = 0;
+ // Start with the first clue
 
         updateClues();
     } catch (error) {
@@ -84,12 +85,7 @@ async function submitGuess() {
         } else {
             currentClueIndex = result.currentClueIndex;
 
-            // If this is the last clue (Actors), allow one final guess
-            if (currentClueIndex === clues.length - 1) {
-                updateClues();
-                showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
-                return;
-            }
+                    
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
@@ -97,6 +93,18 @@ async function submitGuess() {
                 showMessage(`❌ Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
                 document.getElementById("guess-field").disabled = true;
                 document.getElementById("submit-guess").disabled = true;
+                return;
+            }
+
+            if (result.nextClue) {
+                clues.push(result.nextClue); // Only add the next clue
+                updateClues(); // Refresh UI
+            }    
+
+            // If this is the last clue (Actors), allow one final guess
+            if (clues.length == 6) {
+                updateClues();
+                showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
                 return;
             }
 

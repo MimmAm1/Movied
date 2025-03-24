@@ -140,9 +140,8 @@ async function getRandomMovie(collection) {
 
     return {
         id: movie._id,
-        //name: movie.name, // Keep the answer in the backend
-        clues,
-        currentClueIndex: 0 // Start with the first clue
+        clues: [clues[0]], // Skickar endast första ledtråden
+        currentClueIndex: 0
     };
 }
 
@@ -208,7 +207,7 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
     return {
         success: false,
         message: "Fel gissning.",
-        clues: clues.slice(0, currentClueIndex + 1),
+        nextClue: clues[currentClueIndex + 1] || null, // Send only the next clue
         currentClueIndex: currentClueIndex + 1
     };
 
