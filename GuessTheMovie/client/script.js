@@ -8,6 +8,13 @@ let filteredMovies = []; // Store movie names locally
 // Wait for the page to load
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("DOM Loaded. Fetching movie list and starting game...");
+
+    // theme
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
+    //
+
     await fetchMovieList(); // Load movie list once
     startGame();
 
@@ -197,3 +204,32 @@ function updateScoreboard(scores) {
 }
 
 //__________________________________________________________________________________//
+
+function navOpen() {
+    let navMenu = document.querySelector(".nav-item-container");
+    let navIcon = document.getElementById("nav-icon3");
+
+    let nav = document.querySelector(".nav");
+
+    if (!navIcon.classList.contains("open")) {
+        navIcon.classList.add("open");
+        navMenu.classList.add("active");
+
+        nav.style.backgroundColor = "color-mix(in srgb, var(--accent) 0%, transparent)";
+        navMenu.style.backgroundColor = "color-mix(in srgb, var(--accent) 50%, transparent)";
+    } else {
+        navIcon.classList.remove("open");
+        navMenu.classList.remove("active");
+        nav.style.backgroundColor = "color-mix(in srgb, var(--accent) 0%, transparent)";
+        navMenu.style.backgroundColor = "color-mix(in srgb, var(--accent) 10%, transparent)";
+    }
+}
+
+// theme
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const newTheme = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+}

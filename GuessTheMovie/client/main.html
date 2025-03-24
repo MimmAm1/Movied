@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -25,16 +25,20 @@
     <div class="nav-item-container">
         <nav class="nav">
             <ul>
-                <li><a href="main.html" id="active-page">Start page</a></li>
-                <li><a href="daily.html">Daily</a></li>
-                <li><a href="endless.html">Unlimited</a></li>
+                <li><a href="main.html" id="active-page"><span><i class="fa-solid fa-house"></i> </span>Start page</a></li>
+                <li><a href="daily.html"><span><i class="fa-regular fa-clock"></i> </span>Daily</a></li>
+                <li><a href="unlimited.html"><span><i class="fa-solid fa-infinity"></i> </span>Unlimited</a></li>
+                <li><a onclick="toggleTheme()"><span><i class="fa-solid fa-brush"></i> </span>Toggle Theme</a></li>
             </ul>
         </nav>
     </div>
 
     <div class="main-container">
+        <h1>Movied</h1>
+        <h2 id="guess-subtitle">Guess The Movie Game</h2>
+        <h3>Play now below!</h3>
         <a href="daily.html"><button class="daily"><i class="fa-regular fa-clock"></i> Daily Challenge</button></a>
-        <a href="endless.html"><button class="endless"><i class="fa-solid fa-infinity"></i> Unlimited</button></a>
+        <a href="unlimited.html"><button class="endless"><i class="fa-solid fa-infinity"></i> Unlimited</button></a>
     </div>
 </body>
 

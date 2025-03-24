@@ -18,13 +18,33 @@
     height: 60vh;
 }
 
+h1{
+    margin-bottom: 25px;
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+#guess-subtitle {
+    color: var(--primary);
+    font-size: 2.5rem;
+    text-align: center;
+    margin: 0;
+}
+
+h3{
+    color: var(--secondary);
+    font-size: 2rem;
+    text-align: center;
+    margin: 0 0 25px 0;
+}
+
 .main-container button {
     width: 100%;
     color: var(--primary);
     padding: 30px 20px;
     border-radius: 3px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.2rem;
     border: none;
     background-color: color-mix(in srgb, var(--accent) 20%, transparent);
     transition: all 0.2s ease;
@@ -33,7 +53,7 @@
 
 .main-container a {
     padding: 10px 20px;
-    width: 50%;
+    width: 30rem;
 }
 
 .main-container button:hover {
