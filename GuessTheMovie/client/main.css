@@ -19,11 +19,12 @@
 }
 
 .main-container button {
-    width: 30%;
+    width: 100%;
     color: var(--primary);
-    margin-top: 10px;
-    padding: 20px;
+    padding: 30px 20px;
     border-radius: 3px;
+    font-weight: 600;
+    font-size: 1rem;
     border: none;
     background-color: color-mix(in srgb, var(--accent) 20%, transparent);
     transition: all 0.2s ease;
@@ -31,7 +32,8 @@
 }
 
 .main-container a {
-    padding: 20px;
+    padding: 10px 20px;
+    width: 50%;
 }
 
 .main-container button:hover {
