@@ -82,6 +82,7 @@ async function submitGuess() {
         const result = await response.json();
 
         if (result.success) {
+            clues = result.allClues;
             currentClueIndex = clues.length; // Show all clues
             updateClues();
             showMessage(`✅ Correct! The movie was <strong>${userGuess}</strong>`, "success");
