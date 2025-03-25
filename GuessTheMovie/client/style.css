@@ -46,12 +46,15 @@ h1 {
     color: inherit;
     width: fit-content;
     font-size: 1.5rem;
-    margin: 20px 0;
+    margin: 20px 0 20px 70px;
 }
 
 .navigation {
-    padding: 10px 50px;
+    padding: 10px 0px;
     display: flex;
+    position: fixed;
+    top: 0;
+    width: 100vw;
     justify-content: space-between;
     flex-direction: row;
     color: var(--secondary);
@@ -64,6 +67,7 @@ h1 {
     width: 30px;
     height: 28px;
     margin: auto 0;
+    margin-right: 100px;
     position: relative;
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -193,7 +197,7 @@ h1 {
 }
 
 .main-container {
-    margin: 50px 200px 50px 200px;
+    margin: 150px 200px 50px 200px;
 }
 
 a {

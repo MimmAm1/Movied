@@ -48,6 +48,12 @@ const server = http.createServer(async (req, res) => {
             return sendResponse(res, 200, "application/json", JSON.stringify(movie));
         }
 
+        if (req.method === "GET" && pathComponents[1] === "daily-movie") {
+            const movie = await getDailyMovie(collection);
+            if (!movie) return sendError(res, 404, "Ingen film hittades.");
+            return sendResponse(res, 200, "application/json", JSON.stringify(movie));
+        }        
+
         if (req.method === "GET" && pathComponents[1] === "get-movie-list") {
             const movies = await collection
                 .find({
@@ -145,6 +151,58 @@ async function getRandomMovie(collection) {
     };
 }
 
+async function getDailyMovie(collection) {
+    const query = {
+        rating: { $gte: 7.5 },
+        year: { $gt: 1960 },
+        votes: { $gte: 40000 }
+    };
+
+    const count = await collection.countDocuments(query);
+    if (count === 0) return null;
+
+    const seed = getTodaySeed(); // deterministic seed
+    const rand = mulberry32(seed);
+    const dailyIndex = Math.floor(rand() * count);
+
+    const movie = await collection.findOne(query, { skip: dailyIndex });
+    if (!movie) return null;
+
+    const keywords = extractKeywords(movie.description);
+    const clues = [
+        `Keywords: ${keywords.join(", ")}`,
+        `Genre: ${movie.genre.join(", ")}`,
+        `IMDb Rating: ${movie.rating}`,
+        `Released: ${movie.year}`,
+        `Directed by: ${movie.director.join(", ")}`,
+        `Actors: ${movie.star.join(", ")}`
+    ];
+
+    return {
+        id: movie._id,
+        clues: [clues[0]],
+        currentClueIndex: 0
+    };
+}
+
+function getTodaySeed() {
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    let hash = 0;
+    for (let i = 0; i < today.length; i++) {
+        hash = today.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash;
+    }
+    return Math.abs(hash);
+}
+
+function mulberry32(seed) {
+    return function () {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
 
 // KEYWORDS GENERATOR!!
 

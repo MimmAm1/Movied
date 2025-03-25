@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="daily-endless.css">
     <script src="script.js"></script>
+    <script src="daily.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <title>Daily CHallenge</title>
 </head>
@@ -49,10 +50,13 @@
     <div class="main-container">
         <h1>Daily Challenge</h1>
         <div class="guess-container">
+            <p id="clues-box-d"></p>
             <div class="guess-input">
-                <input type="text" name="guess" id="guess-field" placeholder="Enter movie name">
-                <button id="submit-guess">Guess</button>
+                <input type="text" id="daily-guess-field" placeholder="Enter movie name">
+                <button id="daily-submit-guess">Guess</button>
             </div>
+            <div id="suggestions-box-d"></div>
+            <p id="message-box-d"></p>
         </div>
     </div>
 </body>

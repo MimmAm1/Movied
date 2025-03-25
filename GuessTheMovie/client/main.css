@@ -1,7 +1,6 @@
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@1&display=swap');
 
 .main-container {
-    margin: 50px 200px 50px 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
