@@ -19,13 +19,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     startGame();
 
 
-//-----------------------------Experimentellt-----------------------------//
+    //-----------------------------Experimentellt-----------------------------//
 
     if (document.querySelector("#scoreboard")) {
         loadScoreboard();
     }
 
-//___________________________________________________________________________//
+    //___________________________________________________________________________//
 
 
     // Add event listener to the guess button
@@ -53,7 +53,7 @@ async function startGame() {
         currentMovieId = movie.id;
         clues = [movie.clues[0]]; // Endast första ledtråden visas i början
         currentClueIndex = 0;
- // Start with the first clue
+        // Start with the first clue
 
         updateClues();
     } catch (error) {
@@ -84,7 +84,11 @@ async function submitGuess() {
         const result = await response.json();
 
         if (result.success) {
-            currentClueIndex = clues.length; // Show all clues
+            // Visa alla ledtrådar genom att ersätta den gamla listan
+            clues = result.allClues;
+
+            // Uppdatera ledtrådsindex så att allt visas
+            currentClueIndex = clues.length;
             updateClues();
             showMessage(`✅ Correct! The movie was <strong>${userGuess}</strong>`, "success");
             document.getElementById("guess-field").disabled = true;
@@ -92,7 +96,7 @@ async function submitGuess() {
         } else {
             currentClueIndex = result.currentClueIndex;
 
-                    
+
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
@@ -106,7 +110,7 @@ async function submitGuess() {
             if (result.nextClue) {
                 clues.push(result.nextClue); // Only add the next clue
                 updateClues(); // Refresh UI
-            }    
+            }
 
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
