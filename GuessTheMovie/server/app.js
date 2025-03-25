@@ -2,6 +2,7 @@ const http = require("node:http");
 
 const { MongoClient } = require("mongodb");
 
+
 const nlp = require("compromise");
 
 //GLOBAL CONST
@@ -99,34 +100,42 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
-        if (req.method === "POST" && pathComponents[1] === "get-movie-by-title") {
+        if (req.method === "POST" && pathComponents[1] === "get-movie-by-id") {
             let body = "";
             req.on("data", chunk => (body += chunk));
             req.on("end", async () => {
-                const { title } = JSON.parse(body);
-                if (!title) return sendError(res, 400, "Title is required.");
+                try {
+                    const { id } = JSON.parse(body);
+                    if (!id) return sendError(res, 400, "Movie ID is required.");
         
-                const movie = await collection.findOne({ title });
-                if (!movie) return sendError(res, 404, "Movie not found.");
+                    const movie = await collection.findOne({ _id: id }); // ✅ correct!
         
-                const keywords = extractKeywords(movie.description);
-                const clues = [
-                    `Keywords: ${keywords.join(", ")}`,
-                    `Genre: ${movie.genre.join(", ")}`,
-                    `IMDb Rating: ${movie.rating}`,
-                    `Released: ${movie.year}`,
-                    `Directed by: ${movie.director.join(", ")}`,
-                    `Actors: ${movie.star.join(", ")}`
-                ];
+                    if (!movie) return sendError(res, 404, "Movie not found.");
         
-                return sendResponse(res, 200, "application/json", JSON.stringify({
-                    id: movie._id,
-                    clues: [clues[0]],
-                    currentClueIndex: 0
-                }));
+                    const keywords = extractKeywords(movie.description);
+                    const clues = [
+                        `Keywords: ${keywords.join(", ")}`,
+                        `Genre: ${movie.genre.join(", ")}`,
+                        `IMDb Rating: ${movie.rating}`,
+                        `Released: ${movie.year}`,
+                        `Directed by: ${movie.director.join(", ")}`,
+                        `Actors: ${movie.star.join(", ")}`
+                    ];
+        
+                    return sendResponse(res, 200, "application/json", JSON.stringify({
+                        id: movie._id,
+                        clues,
+                        currentClueIndex: 0
+                    }));
+                } catch (err) {
+                    console.error("Error in /get-movie-by-id:", err);
+                    return sendError(res, 500, "Server error.");
+                }
             });
-        }
-    
+        
+            return;
+        }        
+
         // Om ingen route matchar
         return sendError(res, 404, "Sidan hittades inte.");
     } catch (error) {
@@ -140,6 +149,8 @@ server.listen(port, hostname, () => {
 });
 
 function sendResponse(res, statusCode, contentType = null, data = null) {
+    if (res.headersSent) return;
+
     res.statusCode = statusCode;
     res.setHeader("Access-Control-Allow-Origin", "*"); // Allow requests from any origin
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS"); // Allow these request types
@@ -151,6 +162,7 @@ function sendResponse(res, statusCode, contentType = null, data = null) {
 
 
 function sendError(res, statusCode, message) {
+    if (res.headersSent) return;
     sendResponse(res, statusCode, "application/json", JSON.stringify({ error: message }));
 }
 
@@ -276,7 +288,7 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
     if (!movie) return { success: false, message: "Filmen hittades inte." };
 
     const isCorrect = movie.name.toLowerCase() === guess.toLowerCase();
-    
+
 
     // Get all clues in the right order
     const keywords = extractKeywords(movie.description);
@@ -291,9 +303,9 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
 
     if (isCorrect) {
         console.log("rätt svar");
-        return { 
-            success: true, 
-            message: "Rätt svar!", 
+        return {
+            success: true,
+            message: "Rätt svar!",
             allClues: clues, // alla ledtrådar
             totalClues: clues.length
         };
@@ -342,7 +354,10 @@ async function getPastDailyChallenges(collection) {
         const rand = mulberry32(seed);
         const index = Math.floor(rand() * allMovies.length);
         const movie = allMovies[index];
-        result.push(movie.name); // or movie.name if that's the field
+        result.push({
+            id: movie._id, // ✅ string-based MongoDB _id becomes id
+            title: movie.name
+        });
     }
 
     return result;

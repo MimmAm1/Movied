@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="archive.css">
+    <link rel="stylesheet" href="daily-endless.css">
     <script src="script.js"></script>
     <script src="archive.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -42,9 +42,9 @@
                         <span class="nav-text">Unlimited</a>
                 </li></span>
                 <li>
-                    <a href="archive.html"  id="active-page">
+                    <a href="archive.html" id="active-page">
                         <span><i class="fa-solid fa-clock-rotate-left""></i> </span>
-                        <span class="nav-text">Past Dailies</a>
+                        <span class=" nav-text">Past Dailies</a>
                 </li></span>
                 <li>
                     <a onclick="toggleTheme()">
@@ -57,17 +57,27 @@
 
     <div class="main-container">
         <h1>Past Daily Challenges</h1>
-        <div id="past-dailies-container"></div>
 
-        <!-- Game UI (hidden until button is clicked) -->
-        <div class="game-container" id="archive-game" style="display: none;">
-            <div id="archive-clues-box" class="clues-box"></div>
-            <div class="guess-container">
-                <input id="archive-guess-field" class="guess-field" type="text" placeholder="Guess the movie...">
-                <button id="archive-submit-guess" class="submit-guess">Submit Guess</button>
-            </div>
-            <div id="archive-message-box" class="message-box"></div>
+        <div id="past-dailies-container" class="button-container">
+            <!-- Buttons will be inserted here -->
         </div>
+
+        <div class="guess-container" id="archive-game" style="display: none;">
+            <p id="archive-clues-box" class="clues-box"></p>
+
+            <div class="guess-input">
+                <input type="text" id="archive-guess-field" class="guess-field" placeholder="Enter movie name">
+                <button id="archive-submit-guess" class="submit-guess">Guess</button>
+            </div>
+
+            <div id="archive-suggestions-box" class="suggestions-box"></div>
+            <p id="archive-message-box" class="message-box"></p>
+        </div>
+
+        <button id="go-back-button" style="display: none;">
+            <span class="arrow"><i class="fa-solid fa-arrow-left"></i></span>
+            <span class="btn-text">Go back to challenge list</span>
+        </button>
     </div>
 </body>
 

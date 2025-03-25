@@ -90,7 +90,7 @@ async function submitGuess() {
             // Uppdatera ledtrådsindex så att allt visas
             currentClueIndex = clues.length;
             updateClues();
-            showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success");
+            showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
             document.getElementById("guess-field").disabled = true;
             document.getElementById("submit-guess").disabled = true;
         } else {
@@ -99,7 +99,7 @@ async function submitGuess() {
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
-                showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
                 document.getElementById("guess-field").disabled = true;
                 document.getElementById('guess-field').innerHTML = result.correctAnswer;
                 document.getElementById("submit-guess").disabled = true;
@@ -108,18 +108,20 @@ async function submitGuess() {
 
             if (result.nextClue) {
                 clues.push(result.nextClue); // Only add the next clue
+                document.getElementById('guess-field').value = '';
                 updateClues(); // Refresh UI
             }
 
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
                 updateClues();
-                showMessage(`<i class="fa-solid fa-masks-theater"></i> This is your last chance! Final clue: Actors.`, "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> <strong>This is your last chance!</strong> Final clue: <strong>Actors</strong>.`, "error");
+                document.getElementById('guess-field').value = '';
                 return;
             }
 
             updateClues();
-            showMessage(`<i class="fa-solid fa-xmark"></i> Wrong guess! Here's another clue.`, "error");
+            showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Wrong guess!</strong> Here's another clue.`, "error");
         }
     } catch (error) {
         console.error("Error submitting guess:", error);

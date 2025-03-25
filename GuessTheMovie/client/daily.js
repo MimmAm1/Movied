@@ -111,12 +111,12 @@ async function submitGuess() {
             clues = result.allClues;
             currentClueIndex = clues.length; // Show all clues
             updateClues();
-            showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success");
+            showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
 
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
 
-            saveGameState(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success", true);
+            saveGameState(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success", true);
         } else {
             currentClueIndex = result.currentClueIndex;
 
@@ -126,30 +126,32 @@ async function submitGuess() {
                 currentClueIndex = clues.length;
                 updateClues();
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
-                showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
 
                 document.getElementById("daily-guess-field").disabled = true;
                 document.getElementById("daily-submit-guess").disabled = true;
 
-                saveGameState(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error", true);
+                saveGameState(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error", true);
                 return;
             }
 
             if (result.nextClue) {
                 clues.push(result.nextClue); // Only add the next clue
+                document.getElementById('daily-guess-field').value = '';
                 updateClues(); // Refresh UI
             }
 
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
                 updateClues();
-                showMessage(`<i class="fa-solid fa-masks-theater"></i> This is your last chance! Final clue: Actors.`, "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> <strong>This is your last chance!</strong> Final clue: <strong>Actors</strong>.`, "error");
                 saveGameState();
+                document.getElementById('daily-guess-field').value = '';
                 return;
             }
 
             updateClues();
-            showMessage(`<i class="fa-solid fa-xmark"></i> Wrong guess! Here's another clue.`, "error");
+            showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Wrong guess!</strong> Here's another clue.`, "error");
             saveGameState();
         }
     } catch (error) {

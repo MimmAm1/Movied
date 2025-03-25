@@ -7,6 +7,14 @@
     --secondary: #b79aad;
     --accent: #8c6370;
     --font-satoshi: 'Satoshi', sans-serif;
+
+    --success-bg: #dceee3;
+    --success-text: #215c39;
+    --success-border: #b4dec8;
+
+    --error-bg: #f3d6d8;
+    --error-text: #89222c;
+    --error-border: #e3a9ad;
 }
 
 :root[data-theme="dark"] {
@@ -16,6 +24,14 @@
     --secondary: #64475a;
     --accent: #9b727f;
     --font-satoshi: 'Satoshi', sans-serif;
+
+    --success-bg: color-mix(in srgb, #4caf50 25%, var(--background));
+    --success-text: #a8e6b1;
+    --success-border: color-mix(in srgb, #81c784 60%, transparent);
+
+    --error-bg: color-mix(in srgb, rgb(255, 47, 47) 15%, transparent);
+    --error-text: #ffb3b3;
+    --error-border: color-mix(in srgb, rgb(255, 70, 70) 30%, transparent);
 }
 
 ::selection {
@@ -243,7 +259,7 @@ a span {
     outline: 1px solid var(--accent);
 }
 
-.submit-guess{
+.submit-guess {
     appearance: none;
     background-color: color-mix(in srgb, var(--accent) 25%, transparent);
     color: var(--primary);
@@ -255,7 +271,7 @@ a span {
     transition: all 0.2s ease;
 }
 
-.submit-guess:hover{
+.submit-guess:hover {
     cursor: pointer;
     filter: brightness(1.1);
 }
@@ -264,7 +280,7 @@ a span {
     background-color: color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
-.suggestions-box{
+.suggestions-box {
     position: relative;
     width: 60%;
     background: var(--secondary);
@@ -292,10 +308,34 @@ a span {
     background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
-.message-box, .clues-box, .success, .error{
+.message-box,
+.clues-box,
+.success,
+.error {
     margin-top: 10px;
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 5px;
     font-size: 1.1em;
     text-align: center;
+}
+
+.hint {
+    background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+    width: 80%;
+    text-align: center;
+    padding: 10px;
+    border-radius: 3px;
+    color: var(--text);
+}
+
+.success {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-border);
+}
+
+.error {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
 }

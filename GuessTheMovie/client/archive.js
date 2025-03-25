@@ -3,26 +3,48 @@ const serverURL = "http://127.0.0.1:3000";
 let currentMovieId = null;
 let currentClueIndex = 0;
 let clues = [];
+let filteredMovies = [];
+let pastMovies = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
+    await fetchMovieList();
     await loadPastDailies();
 
     document.getElementById("archive-submit-guess").addEventListener("click", submitGuess);
+    document.getElementById("archive-guess-field").addEventListener("input", handleAutocomplete);
+
+    document.getElementById("go-back-button").addEventListener("click", () => {
+        document.getElementById("archive-game").style.display = "none";
+        document.getElementById("go-back-button").style.display = "none";
+        document.getElementById("past-dailies-container").style.display = "flex";
+    });
 });
+
+async function fetchMovieList() {
+    try {
+        const response = await fetch(`${serverURL}/get-movie-list`);
+        filteredMovies = await response.json();
+    } catch (error) {
+        console.error("Error fetching movie list:", error);
+    }
+}
 
 async function loadPastDailies() {
     try {
         const response = await fetch(`${serverURL}/past-daily-challenges`);
-        const titles = await response.json();
+        pastMovies = await response.json();
 
         const container = document.getElementById("past-dailies-container");
         container.innerHTML = "";
 
-        titles.forEach((_, index) => {
+        pastMovies.forEach((movie, index) => {
             const btn = document.createElement("button");
             btn.textContent = `${index + 1}`;
-            btn.className = "submit-guess"; // reuse styling
-            btn.addEventListener("click", () => startPastGame(index));
+            btn.className = "past-daily-btn";
+            btn.addEventListener("click", () => startPastGame(movie.id));
             container.appendChild(btn);
         });
     } catch (error) {
@@ -30,50 +52,52 @@ async function loadPastDailies() {
     }
 }
 
-async function startPastGame(dayIndex) {
+async function startPastGame(id) {
     try {
-        const response = await fetch(`${serverURL}/past-daily-challenges`);
-        const titles = await response.json();
-        const title = titles[dayIndex];
-
-        const movieRes = await fetch(`${serverURL}/get-movie-by-title`, {
+        const response = await fetch(`${serverURL}/get-movie-by-id`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title })
+            body: JSON.stringify({ id })
         });
 
-        if (!movieRes.ok) throw new Error("Movie not found.");
+        if (!response.ok) throw new Error("Failed to fetch past movie");
 
-        const movie = await movieRes.json();
+        const movie = await response.json();
         currentMovieId = movie.id;
         clues = [movie.clues[0]];
         currentClueIndex = 0;
 
-        document.getElementById("archive-game").style.display = "block";
+        // Hide challenge buttons
+        document.getElementById("past-dailies-container").style.display = "none";
+
+        // Show game and back button
+        document.getElementById("archive-game").style.display = "flex";
+        document.getElementById("go-back-button").style.display = "block";
+
+        document.getElementById("archive-game").style.display = "flex";
+
         document.getElementById("archive-clues-box").innerHTML = "";
-        document.getElementById("archive-message-box").innerHTML = "";
+        const msgBox = document.getElementById("archive-message-box");
+        msgBox.innerHTML = "";
+        msgBox.className = "message-box";
+
         document.getElementById("archive-guess-field").value = "";
         document.getElementById("archive-guess-field").disabled = false;
         document.getElementById("archive-submit-guess").disabled = false;
 
         updateClues();
     } catch (error) {
-        showMessage("Failed to load movie.", "error");
         console.error("Error starting past game:", error);
+        showMessage("Could not load the selected movie.", "error");
     }
 }
 
-function updateClues() {
-    const clueBox = document.getElementById("archive-clues-box");
-    clueBox.innerHTML = clues.slice(0, currentClueIndex + 1).join("<br>");
-}
-
 async function submitGuess() {
-    const guessInput = document.getElementById("archive-guess-field");
-    const guess = guessInput.value.trim();
+    const guessField = document.getElementById("archive-guess-field");
+    const userGuess = guessField.value.trim();
 
-    if (!guess) {
-        showMessage("Please enter a guess!", "error");
+    if (!userGuess) {
+        showMessage("Please enter a movie name!", "error");
         return;
     }
 
@@ -81,54 +105,89 @@ async function submitGuess() {
         const response = await fetch(`${serverURL}/guess`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ movieId: currentMovieId, guess, currentClueIndex })
+            body: JSON.stringify({ movieId: currentMovieId, guess: userGuess, currentClueIndex })
         });
+
+        if (!response.ok) throw new Error("Failed to check guess");
 
         const result = await response.json();
 
         if (result.success) {
             clues = result.allClues;
-            currentClueIndex = clues.length - 1;
+            currentClueIndex = clues.length;
             updateClues();
-            showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${guess}</strong>`, "success");
-            disableInputs();
+            showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
+
+            document.getElementById("archive-guess-field").disabled = true;
+            document.getElementById("archive-submit-guess").disabled = true;
         } else {
             currentClueIndex = result.currentClueIndex;
 
             if (result.correctAnswer) {
                 clues = result.allClues;
-                currentClueIndex = clues.length - 1;
+                currentClueIndex = clues.length;
                 updateClues();
-                showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was <strong>${result.correctAnswer}</strong>`, "error");
-                disableInputs();
+                showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+
+                document.getElementById("archive-guess-field").disabled = true;
+                document.getElementById("archive-submit-guess").disabled = true;
+                document.getElementById("archive-guess-field").value = "";
                 return;
             }
 
-            if (result.nextClue) clues.push(result.nextClue);
-
-            updateClues();
+            if (result.nextClue) {
+                clues.push(result.nextClue);
+                updateClues();
+                document.getElementById('archive-guess-field').value = '';
+            }
 
             if (clues.length === 6) {
-                showMessage("🎭 Last clue! Final chance.", "error");
-            } else {
-                showMessage(`<i class="fa-solid fa-xmark"></i> Wrong! Here's another clue.`, "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> <strong>Last chance!</strong> Final clue: <strong>Actors</strong>.`, "error");
+                document.getElementById('archive-guess-field').value = '';
+                return;
             }
+
+            updateClues();
+            showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Wrong guess!</strong> Here's another clue.`, "error");
         }
     } catch (error) {
         console.error("Error submitting guess:", error);
         showMessage("An error occurred while checking your guess.", "error");
     }
 
-    guessInput.value = "";
+    guessField.value = "";
 }
 
-function disableInputs() {
-    document.getElementById("archive-guess-field").disabled = true;
-    document.getElementById("archive-submit-guess").disabled = true;
+function updateClues() {
+    const clueBox = document.getElementById("archive-clues-box");
+    clueBox.innerHTML = clues.slice(0, currentClueIndex + 1).join("<br>");
 }
 
 function showMessage(message, type) {
     const box = document.getElementById("archive-message-box");
     box.innerHTML = message;
     box.className = `message-box ${type}`;
+}
+
+function handleAutocomplete() {
+    const query = this.value.trim().toLowerCase();
+    const suggestionsBox = document.getElementById("archive-suggestions-box");
+
+    if (query.length < 2) {
+        suggestionsBox.innerHTML = "";
+        return;
+    }
+
+    const matches = filteredMovies
+        .filter(movie => movie.name.toLowerCase().startsWith(query))
+        .slice(0, 10);
+
+    suggestionsBox.innerHTML = matches.map(movie => `<div class="suggestion">${movie.name}</div>`).join("");
+
+    document.querySelectorAll(".suggestion").forEach(item => {
+        item.addEventListener("click", () => {
+            document.getElementById("archive-guess-field").value = item.innerText;
+            suggestionsBox.innerHTML = "";
+        });
+    });
 }
