@@ -72,3 +72,36 @@
 #go-back-button:hover .arrow {
     transform: translateX(-6px); /* ⬅️ slides left */
 }
+
+/* New game */
+
+#new-game-button, #next-movie-button {
+    padding: 15px 25px;
+    border-radius: 4px;
+}
+
+/* streak */
+
+.streak-box {
+    display: flex;
+    justify-self: center;
+    color: var(--text);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: -35px 0 0 0;
+}
+
+#streak-value {
+    color: var(--success-text);
+    font-weight: 800;
+}
+
+#streak-value::before {
+    content: 'Streak: ';
+    color: var(--text);
+    font-weight: 600;
+}
+
+#streak-value::after {
+    content: '';
+}

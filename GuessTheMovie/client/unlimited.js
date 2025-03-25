@@ -4,6 +4,8 @@ let currentMovieId = null;
 let currentClueIndex = 0;
 let clues = [];
 let filteredMovies = []; // Store movie names locally
+let correctStreak = parseInt(localStorage.getItem("unlimitedStreak")) || 0;
+updateStreakDisplay();
 
 // Wait for the page to load
 document.addEventListener("DOMContentLoaded", async () => {
@@ -18,18 +20,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     await fetchMovieList(); // Load movie list once
     startGame();
 
-
-    //-----------------------------Experimentellt-----------------------------//
-
-    if (document.querySelector("#scoreboard")) {
-        loadScoreboard();
-    }
-
-    //___________________________________________________________________________//
-
-
     // Add event listener to the guess button
     document.getElementById("submit-guess").addEventListener("click", submitGuess);
+
+    document.getElementById("next-movie-button").addEventListener("click", () => {
+        // Reset UI and fetch a new movie
+        currentClueIndex = 0;
+        clues = [];
+        document.getElementById("guess-field").value = "";
+        document.getElementById("guess-field").disabled = false;
+        document.getElementById("submit-guess").disabled = false;
+        document.getElementById("next-movie-button").style.display = "none";
+        document.getElementById("message-box").innerHTML = "";
+        document.getElementById("message-box").className = "message-box";
+        document.getElementById("new-game-button").style.display = "none";
+        startGame();
+    });
+    
+    document.getElementById("new-game-button").addEventListener("click", () => {
+        correctStreak = 0;
+        updateStreakDisplay();
+        currentClueIndex = 0;
+        clues = [];
+        document.getElementById("guess-field").value = "";
+        document.getElementById("guess-field").disabled = false;
+        document.getElementById("submit-guess").disabled = false;
+        document.getElementById("message-box").innerHTML = "";
+        document.getElementById("message-box").className = "message-box";
+        document.getElementById("new-game-button").style.display = "none";
+        document.getElementById("next-movie-button").style.display = "none";
+        startGame();
+    });    
+
 });
 
 // Fetch movie list for autocomplete
@@ -91,8 +113,16 @@ async function submitGuess() {
             currentClueIndex = clues.length;
             updateClues();
             showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
+            document.getElementById('guess-field').value = result.correctAnswer;
             document.getElementById("guess-field").disabled = true;
             document.getElementById("submit-guess").disabled = true;
+
+            // score update
+            correctStreak++;
+            updateStreakDisplay();
+            localStorage.setItem("unlimitedStreak", correctStreak);
+            document.getElementById("next-movie-button").style.display = "inline-block";
+
         } else {
             currentClueIndex = result.currentClueIndex;
 
@@ -100,9 +130,17 @@ async function submitGuess() {
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
                 showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                document.getElementById('guess-field').value = result.correctAnswer;
                 document.getElementById("guess-field").disabled = true;
-                document.getElementById('guess-field').innerHTML = result.correctAnswer;
                 document.getElementById("submit-guess").disabled = true;
+                document.getElementById("new-game-button").style.display = "inline-block";
+
+                // reset score
+                correctStreak = 0;
+                updateStreakDisplay();
+                localStorage.setItem("unlimitedStreak", correctStreak);
+                document.getElementById("new-game-button").style.display = "inline-block";
+
                 return;
             }
 
@@ -177,3 +215,7 @@ document.getElementById("guess-field").addEventListener("input", function () {
         });
     });
 });
+
+function updateStreakDisplay() {
+    document.getElementById("streak-value").textContent = correctStreak;
+}

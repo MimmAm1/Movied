@@ -319,6 +319,12 @@ a span {
     text-align: center;
 }
 
+.clues-box {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin: 20px auto 10px auto;
+}
+
 .hint {
     background-color: color-mix(in srgb, var(--accent) 5%, transparent);
     width: 80%;

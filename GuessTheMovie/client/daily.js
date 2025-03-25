@@ -113,6 +113,7 @@ async function submitGuess() {
             updateClues();
             showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
 
+            document.getElementById('daily-guess-field').value = result.correctAnswer;
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
 
