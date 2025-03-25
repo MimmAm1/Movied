@@ -96,8 +96,6 @@ async function submitGuess() {
         } else {
             currentClueIndex = result.currentClueIndex;
 
-
-
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
