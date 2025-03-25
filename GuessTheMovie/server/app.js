@@ -4,6 +4,11 @@ const { MongoClient } = require("mongodb");
 
 const nlp = require("compromise");
 
+//GLOBAL CONST
+const RATING = 6;
+const VOTES = 300000;
+const YEAR = 1950;
+
 console.log("Incoming request");
 
 const hostname = "127.0.0.1";
@@ -57,9 +62,9 @@ const server = http.createServer(async (req, res) => {
         if (req.method === "GET" && pathComponents[1] === "get-movie-list") {
             const movies = await collection
                 .find({
-                    rating: { $gte: 7.5 },
-                    year: { $gt: 1960 },
-                    votes: { $gte: 40000 }
+                    rating: { $gte: RATING },
+                    year: { $gt: YEAR },
+                    votes: { $gte: VOTES }
                 })
                 .project({ name: 1, _id: 0 }) // Only return movie names
                 .toArray();
@@ -116,9 +121,9 @@ function sendError(res, statusCode, message) {
 
 async function getRandomMovie(collection) {
     const count = await collection.countDocuments({
-        rating: { $gte: 7.5 },
-        year: { $gt: 1960 },
-        votes: { $gte: 40000 }
+        rating: { $gte: RATING },
+        year: { $gt: YEAR },
+        votes: { $gte: VOTES }
     });
 
     if (count === 0) return null;
@@ -127,7 +132,7 @@ async function getRandomMovie(collection) {
 
     // gör while loop
     const movie = await collection.findOne(
-        { rating: { $gte: 7.5 }, year: { $gt: 1970 }, votes: { $gte: 40000 } },
+        { rating: { $gte: RATING }, year: { $gt: YEAR }, votes: { $gte: VOTES } },
         { skip: randomIndex }
     );
 
@@ -236,9 +241,7 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
     if (!movie) return { success: false, message: "Filmen hittades inte." };
 
     const isCorrect = movie.name.toLowerCase() === guess.toLowerCase();
-    if (isCorrect) {
-        return { success: true, message: "Rätt svar!" };
-    }
+    
 
     // Get all clues in the right order
     const keywords = extractKeywords(movie.description);
@@ -250,6 +253,16 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
         `Directed by: ${movie.director.join(", ")}`,
         `Actors: ${movie.star.join(", ")}`
     ];
+
+    if (isCorrect) {
+        console.log("rätt svar");
+        return { 
+            success: true, 
+            message: "Rätt svar!", 
+            allClues: clues, // alla ledtrådar
+            totalClues: clues.length
+        };
+    }
 
     // If all clues have been used, send game over message
     if (currentClueIndex >= clues.length - 1) {

@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (document.querySelector("#scoreboard")) {
         loadScoreboard();
     }
+
+    //___________________________________________________________________________//
 });
 
 //--------------------------------Exprimentellt-----------------------------------//
