@@ -355,8 +355,7 @@ async function getPastDailyChallenges(collection) {
         const index = Math.floor(rand() * allMovies.length);
         const movie = allMovies[index];
         result.push({
-            id: movie._id, // ✅ string-based MongoDB _id becomes id
-            title: movie.name
+            id: movie._id,
         });
     }
 
