@@ -58,11 +58,13 @@ async function startGame() {
         updateClues();
 
         if (savedState.finished) {
+            currentClueIndex = clues.length - 1;
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
             showMessage(savedState.message, savedState.messageType);
         }
 
+        updateClues()
         return;
     }
 
@@ -120,6 +122,9 @@ async function submitGuess() {
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
+                clues = result.allClues;
+                currentClueIndex = clues.length;
+                updateClues();
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
                 showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
 
@@ -138,7 +143,7 @@ async function submitGuess() {
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
                 updateClues();
-                showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> This is your last chance! Final clue: Actors.`, "error");
                 saveGameState();
                 return;
             }

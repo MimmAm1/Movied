@@ -45,7 +45,7 @@ const server = http.createServer(async (req, res) => {
         const pathComponents = requestUrl.pathname.split("/");
         console.log("Path components:", pathComponents);
 
-
+        // get a random movie
         if (req.method === "GET" && pathComponents[1] === "random-movie") {
             const movie = await getRandomMovie(collection);
             //console.log(movie);
@@ -53,12 +53,20 @@ const server = http.createServer(async (req, res) => {
             return sendResponse(res, 200, "application/json", JSON.stringify(movie));
         }
 
+        // get the daily movie of the day
         if (req.method === "GET" && pathComponents[1] === "daily-movie") {
             const movie = await getDailyMovie(collection);
             if (!movie) return sendError(res, 404, "Ingen film hittades.");
             return sendResponse(res, 200, "application/json", JSON.stringify(movie));
-        }        
+        }
 
+        // past daily movies
+        if (req.method === "GET" && pathComponents[1] === "past-daily-challenges") {
+            const challenges = await getPastDailyChallenges(collection);
+            return sendResponse(res, 200, "application/json", JSON.stringify(challenges));
+        }
+
+        // get the full movie list of movies that match the criteria
         if (req.method === "GET" && pathComponents[1] === "get-movie-list") {
             const movies = await collection
                 .find({
@@ -91,7 +99,34 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
-
+        if (req.method === "POST" && pathComponents[1] === "get-movie-by-title") {
+            let body = "";
+            req.on("data", chunk => (body += chunk));
+            req.on("end", async () => {
+                const { title } = JSON.parse(body);
+                if (!title) return sendError(res, 400, "Title is required.");
+        
+                const movie = await collection.findOne({ title });
+                if (!movie) return sendError(res, 404, "Movie not found.");
+        
+                const keywords = extractKeywords(movie.description);
+                const clues = [
+                    `Keywords: ${keywords.join(", ")}`,
+                    `Genre: ${movie.genre.join(", ")}`,
+                    `IMDb Rating: ${movie.rating}`,
+                    `Released: ${movie.year}`,
+                    `Directed by: ${movie.director.join(", ")}`,
+                    `Actors: ${movie.star.join(", ")}`
+                ];
+        
+                return sendResponse(res, 200, "application/json", JSON.stringify({
+                    id: movie._id,
+                    clues: [clues[0]],
+                    currentClueIndex: 0
+                }));
+            });
+        }
+    
         // Om ingen route matchar
         return sendError(res, 404, "Sidan hittades inte.");
     } catch (error) {
@@ -158,9 +193,9 @@ async function getRandomMovie(collection) {
 
 async function getDailyMovie(collection) {
     const query = {
-        rating: { $gte: 7.5 },
-        year: { $gt: 1960 },
-        votes: { $gte: 40000 }
+        rating: { $gte: RATING },
+        year: { $gt: YEAR },
+        votes: { $gte: VOTES }
     };
 
     const count = await collection.countDocuments(query);
@@ -200,7 +235,7 @@ function getTodaySeed() {
     return Math.abs(hash);
 }
 
-function mulberry32(seed) {
+function mulberry32(seed) { // från github
     return function () {
         let t = seed += 0x6D2B79F5;
         t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -284,53 +319,41 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
 
 }
 
+// get all of the past daily challenges
 
-async function testGetRandomMovie() {
-    const { MongoClient } = require("mongodb");
+async function getPastDailyChallenges(collection) {
+    const startDate = new Date("2025-03-22");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const dbUri = "mongodb://127.0.0.1:27017"; // Change if your DB is hosted elsewhere
-    const dbName = "tnm115-project"; // Change to your actual database name
-    const collectionName = "imdb"; // Change to match your collection
+    const query = {
+        rating: { $gte: RATING },
+        year: { $gt: YEAR },
+        votes: { $gte: VOTES }
+    };
 
-    const client = new MongoClient(dbUri);
+    const allMovies = await collection.find(query).toArray();
+    if (allMovies.length === 0) return [];
 
-    try {
-        await client.connect();
-        console.log("✅ Connected to MongoDB");
+    const result = [];
 
-        const db = client.db(dbName);
-        const collection = db.collection(collectionName);
-
-        // Fetch a random movie
-        const movie = await getRandomMovie(collection);
-
-        if (!movie) {
-            console.log("❌ No movies found in the database.");
-            return;
-        }
-
-        // Extract keywords
-        const keywords = extractKeywords(movie.description);
-
-        // Log the results
-        console.log("Random Movie:", movie.name);
-        console.log("Description:", movie.description);
-        console.log("Extracted Keywords:", keywords.join(", "));
-        console.log("Year:", movie.year);
-        console.log(" Genre:", movie.genre.join(", "));
-        console.log("IMDb Rating:", movie.rating);
-        console.log("Votes:", movie.votes);
-        console.log("Director(s):", movie.director.join(", "));
-        console.log("Main Actor(s):", movie.star.join(", "));
-
-    } catch (error) {
-        console.error("⚠️ Error:", error);
-    } finally {
-        await client.close();
-        console.log("🔌 Disconnected from MongoDB");
+    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+        const seed = getSeedFromDate(d);
+        const rand = mulberry32(seed);
+        const index = Math.floor(rand() * allMovies.length);
+        const movie = allMovies[index];
+        result.push(movie.name); // or movie.name if that's the field
     }
+
+    return result;
 }
 
-// Run the test function
-
-//testGetRandomMovie();
+function getSeedFromDate(date) {
+    const dateStr = date.toISOString().split('T')[0];
+    let hash = 0;
+    for (let i = 0; i < dateStr.length; i++) {
+        hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash;
+    }
+    return Math.abs(hash);
+}

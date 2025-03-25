@@ -30,19 +30,27 @@
                     <a href="main.html">
                         <span><i class="fa-solid fa-house"></i> </span>
                         <span class="nav-text">Start page</a></span>
-                    </li>
+                </li>
                 <li>
                     <a href="daily.html" id="active-page">
                         <span><i class="fa-regular fa-clock"></i> </span>
-                        <span class="nav-text">Daily</a></li></span>
+                        <span class="nav-text">Daily</a>
+                </li></span>
                 <li>
                     <a href="unlimited.html">
                         <span><i class="fa-solid fa-infinity"></i> </span>
-                        <span class="nav-text">Unlimited</a></li></span>
+                        <span class="nav-text">Unlimited</a>
+                </li></span>
+                <li>
+                    <a href="archive.html">
+                        <span><i class="fa-solid fa-clock-rotate-left""></i> </span>
+                        <span class="nav-text">Past Dailies</a>
+                </li></span>
                 <li>
                     <a onclick="toggleTheme()">
                         <span><i class="fa-solid fa-brush"></i> </span>
-                        <span class="nav-text">Toggle Theme</a></li></span>
+                        <span class="nav-text">Toggle Theme</a>
+                </li></span>
             </ul>
         </nav>
     </div>
@@ -50,13 +58,13 @@
     <div class="main-container">
         <h1>Daily Challenge</h1>
         <div class="guess-container">
-            <p id="clues-box-d"></p>
+            <p id="clues-box-d" class="clues-box"></p>
             <div class="guess-input">
-                <input type="text" id="daily-guess-field" placeholder="Enter movie name">
-                <button id="daily-submit-guess">Guess</button>
+                <input type="text" id="daily-guess-field" class="guess-field" placeholder="Enter movie name">
+                <button id="daily-submit-guess" class="submit-guess">Guess</button>
             </div>
-            <div id="suggestions-box-d"></div>
-            <p id="message-box-d"></p>
+            <div id="suggestions-box-d" class="suggestions-box"></div>
+            <p id="message-box-d" class="message-box"></p>
         </div>
     </div>
 </body>

@@ -114,7 +114,7 @@ async function submitGuess() {
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
                 updateClues();
-                showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
+                showMessage(`<i class="fa-solid fa-masks-theater"></i> This is your last chance! Final clue: Actors.`, "error");
                 return;
             }
 
