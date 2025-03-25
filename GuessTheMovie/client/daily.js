@@ -18,18 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     startGame();
 
 
-//-----------------------------Experimentellt-----------------------------//
+    //-----------------------------Experimentellt-----------------------------//
 
     if (document.querySelector("#scoreboard")) {
         loadScoreboard();
     }
 
-//___________________________________________________________________________//
+    //___________________________________________________________________________//
 
 
     // Add event listener to the guess button
     document.getElementById("daily-submit-guess").addEventListener("click", submitGuess);
 });
+
+function getDailyKey() {
+    return new Date().toISOString().split('T')[0]; // e.g. "2025-03-25"
+}
 
 // Fetch movie list for autocomplete
 async function fetchMovieList() {
@@ -43,17 +47,37 @@ async function fetchMovieList() {
 }
 
 async function startGame() {
+    const dailyKey = getDailyKey();
+    const savedState = JSON.parse(localStorage.getItem("dailyGameState"));
+
+    if (savedState && savedState.date === dailyKey) {
+        console.log("Restoring saved game state...");
+        currentMovieId = savedState.movieId;
+        clues = savedState.clues;
+        currentClueIndex = savedState.currentClueIndex;
+        updateClues();
+
+        if (savedState.finished) {
+            document.getElementById("daily-guess-field").disabled = true;
+            document.getElementById("daily-submit-guess").disabled = true;
+            showMessage(savedState.message, savedState.messageType);
+        }
+
+        return;
+    }
+
     try {
         const response = await fetch(`${serverURL}/daily-movie`);
         if (!response.ok) throw new Error("Failed to fetch movie");
 
         const movie = await response.json();
         currentMovieId = movie.id;
-        clues = [movie.clues[0]]; // Endast första ledtråden visas i början
+        clues = [movie.clues[0]];
         currentClueIndex = 0;
- // Start with the first clue
-
         updateClues();
+
+        // Save initial state
+        saveGameState();
     } catch (error) {
         console.error("Error starting game:", error);
         document.querySelector(".guess-container").innerHTML = "<p>Failed to load movie.</p>";
@@ -86,36 +110,42 @@ async function submitGuess() {
             currentClueIndex = clues.length; // Show all clues
             updateClues();
             showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success");
+
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
+
+            saveGameState(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success", true);
         } else {
             currentClueIndex = result.currentClueIndex;
-
-                    
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
                 showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+
                 document.getElementById("daily-guess-field").disabled = true;
                 document.getElementById("daily-submit-guess").disabled = true;
+
+                saveGameState(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error", true);
                 return;
             }
 
             if (result.nextClue) {
                 clues.push(result.nextClue); // Only add the next clue
                 updateClues(); // Refresh UI
-            }    
+            }
 
             // If this is the last clue (Actors), allow one final guess
             if (clues.length == 6) {
                 updateClues();
                 showMessage("🎭 This is your last chance! Final clue: Actors.", "error");
+                saveGameState();
                 return;
             }
 
             updateClues();
             showMessage(`<i class="fa-solid fa-xmark"></i> Wrong guess! Here's another clue.`, "error");
+            saveGameState();
         }
     } catch (error) {
         console.error("Error submitting guess:", error);
@@ -123,6 +153,19 @@ async function submitGuess() {
     }
 
     guessField.value = ""; // Clear input field
+}
+
+function saveGameState(message = "", messageType = "", finished = false) {
+    const gameState = {
+        date: getDailyKey(),
+        movieId: currentMovieId,
+        clues,
+        currentClueIndex,
+        message,
+        messageType,
+        finished
+    };
+    localStorage.setItem("dailyGameState", JSON.stringify(gameState));
 }
 
 // Show messages under the input field
