@@ -78,6 +78,7 @@ async function startGame() {
         // Start with the first clue
 
         updateClues();
+        document.getElementById("guess-field").focus();
     } catch (error) {
         console.error("Error starting game:", error);
         document.querySelector(".guess-container").innerHTML = "<p>Failed to load movie.</p>";
@@ -214,6 +215,24 @@ document.getElementById("guess-field").addEventListener("input", function () {
             suggestionsBox.innerHTML = ""; // Hide suggestions after selection
         });
     });
+});
+
+document.getElementById("guess-field").addEventListener("keydown", function (e) {
+    const suggestionsBox = document.getElementById("suggestions-box");
+    const firstSuggestion = suggestionsBox.querySelector(".suggestion");
+
+    if (e.key === "Enter") {
+        e.preventDefault(); // Prevent form submission
+
+        // If there is a suggestion, pick the first one
+        if (firstSuggestion) {
+            this.value = firstSuggestion.textContent;
+            suggestionsBox.innerHTML = ""; // Clear suggestions
+        } else {
+            // No suggestion, just submit the guess
+            document.getElementById("submit-guess").click();
+        }
+    }
 });
 
 function updateStreakDisplay() {

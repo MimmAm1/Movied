@@ -85,6 +85,8 @@ async function startPastGame(id) {
         document.getElementById("archive-guess-field").disabled = false;
         document.getElementById("archive-submit-guess").disabled = false;
 
+        document.getElementById("archive-guess-field").focus();
+
         updateClues();
     } catch (error) {
         console.error("Error starting past game:", error);
@@ -124,9 +126,6 @@ async function submitGuess() {
             currentClueIndex = result.currentClueIndex;
 
             if (result.correctAnswer) {
-                clues = result.allClues;
-                currentClueIndex = clues.length;
-                updateClues();
                 showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
 
                 document.getElementById("archive-guess-field").disabled = true;
@@ -191,3 +190,21 @@ function handleAutocomplete() {
         });
     });
 }
+
+document.getElementById("archive-guess-field").addEventListener("keydown", function (e) {
+    const suggestionsBox = document.getElementById("archive-suggestions-box");
+    const firstSuggestion = suggestionsBox.querySelector(".suggestion");
+
+    if (e.key === "Enter") {
+        e.preventDefault(); // Prevent form submission
+
+        // If there is a suggestion, pick the first one
+        if (firstSuggestion) {
+            this.value = firstSuggestion.textContent;
+            suggestionsBox.innerHTML = ""; // Clear suggestions
+        } else {
+            // No suggestion, just submit the guess
+            document.getElementById("archive-submit-guess").click();
+        }
+    }
+});

@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await fetchMovieList(); // Load movie list once
     startGame();
 
-
     //-----------------------------Experimentellt-----------------------------//
 
     if (document.querySelector("#scoreboard")) {
@@ -54,6 +53,11 @@ async function startGame() {
         console.log("Restoring saved game state...");
         currentMovieId = savedState.movieId;
         clues = savedState.clues;
+        clues = clues.map(clue => {
+            const temp = document.createElement("div");
+            temp.innerHTML = clue;
+            return temp.innerHTML;
+        });
         currentClueIndex = savedState.currentClueIndex;
         updateClues();
 
@@ -65,6 +69,7 @@ async function startGame() {
         }
 
         updateClues()
+        document.getElementById("daily-guess-field").focus();
         return;
     }
 
@@ -77,6 +82,7 @@ async function startGame() {
         clues = [movie.clues[0]];
         currentClueIndex = 0;
         updateClues();
+        document.getElementById("daily-guess-field").focus();
 
         // Save initial state
         saveGameState();
@@ -123,9 +129,6 @@ async function submitGuess() {
 
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
-                clues = result.allClues;
-                currentClueIndex = clues.length;
-                updateClues();
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
                 showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
 
@@ -221,4 +224,22 @@ document.getElementById("daily-guess-field").addEventListener("input", function 
             suggestionsBox.innerHTML = ""; // Hide suggestions after selection
         });
     });
+});
+
+document.getElementById("daily-guess-field").addEventListener("keydown", function (e) {
+    const suggestionsBox = document.getElementById("suggestions-box-d");
+    const firstSuggestion = suggestionsBox.querySelector(".suggestion");
+
+    if (e.key === "Enter") {
+        e.preventDefault(); // Prevent form submission
+
+        // If there is a suggestion, pick the first one
+        if (firstSuggestion) {
+            this.value = firstSuggestion.textContent;
+            suggestionsBox.innerHTML = ""; // Clear suggestions
+        } else {
+            // No suggestion, just submit the guess
+            document.getElementById("daily-submit-guess").click();
+        }
+    }
 });

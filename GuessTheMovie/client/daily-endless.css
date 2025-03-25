@@ -105,3 +105,8 @@
 #streak-value::after {
     content: '';
 }
+
+.clue-title {
+    color: var(--accent); /* or use a more distinct color like var(--primary) */
+    font-weight: 900;
+}

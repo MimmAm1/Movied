@@ -108,18 +108,18 @@ const server = http.createServer(async (req, res) => {
                     const { id } = JSON.parse(body);
                     if (!id) return sendError(res, 400, "Movie ID is required.");
         
-                    const movie = await collection.findOne({ _id: id }); // ✅ correct!
+                    const movie = await collection.findOne({ _id: id });
         
                     if (!movie) return sendError(res, 404, "Movie not found.");
         
                     const keywords = extractKeywords(movie.description);
                     const clues = [
-                        `Keywords: ${keywords.join(", ")}`,
-                        `Genre: ${movie.genre.join(", ")}`,
-                        `IMDb Rating: ${movie.rating}`,
-                        `Released: ${movie.year}`,
-                        `Directed by: ${movie.director.join(", ")}`,
-                        `Actors: ${movie.star.join(", ")}`
+                        `<span class="clue-title">Keywords:</span> ${keywords.join(", ")}`,
+                        `<span class="clue-title">Genre:</span> ${movie.genre.join(", ")}`,
+                        `<span class="clue-title">IMDb Rating:</span> ${movie.rating}`,
+                        `<span class="clue-title">Released:</span> ${movie.year}`,
+                        `<span class="clue-title">Directed by:</span> ${movie.director.join(", ")}`,
+                        `<span class="clue-title">Actors:</span> ${movie.star.join(", ")}`
                     ];
         
                     return sendResponse(res, 200, "application/json", JSON.stringify({
@@ -188,12 +188,12 @@ async function getRandomMovie(collection) {
     // Generate clues
     const keywords = extractKeywords(movie.description);
     const clues = [
-        `Keywords: ${keywords.join(", ")}`,
-        `Genre: ${movie.genre.join(", ")}`,
-        `IMDb Rating: ${movie.rating}`,
-        `Released: ${movie.year}`,
-        `Directed by: ${movie.director.join(", ")}`,
-        `Actors: ${movie.star.join(", ")}`
+        `<span class="clue-title">Keywords:</span> ${keywords.join(", ")}`,
+        `<span class="clue-title">Genre:</span> ${movie.genre.join(", ")}`,
+        `<span class="clue-title">IMDb Rating:</span> ${movie.rating}`,
+        `<span class="clue-title">Released:</span> ${movie.year}`,
+        `<span class="clue-title">Directed by:</span> ${movie.director.join(", ")}`,
+        `<span class="clue-title">Actors:</span> ${movie.star.join(", ")}`
     ];
 
     return {
@@ -222,12 +222,12 @@ async function getDailyMovie(collection) {
 
     const keywords = extractKeywords(movie.description);
     const clues = [
-        `Keywords: ${keywords.join(", ")}`,
-        `Genre: ${movie.genre.join(", ")}`,
-        `IMDb Rating: ${movie.rating}`,
-        `Released: ${movie.year}`,
-        `Directed by: ${movie.director.join(", ")}`,
-        `Actors: ${movie.star.join(", ")}`
+        `<span class="clue-title">Keywords:</span> ${keywords.join(", ")}`,
+        `<span class="clue-title">Genre:</span> ${movie.genre.join(", ")}`,
+        `<span class="clue-title">IMDb Rating:</span> ${movie.rating}`,
+        `<span class="clue-title">Released:</span> ${movie.year}`,
+        `<span class="clue-title">Directed by:</span> ${movie.director.join(", ")}`,
+        `<span class="clue-title">Actors:</span> ${movie.star.join(", ")}`
     ];
 
     return {
@@ -293,12 +293,12 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
     // Get all clues in the right order
     const keywords = extractKeywords(movie.description);
     const clues = [
-        `Keywords: ${keywords.join(", ")}`,
-        `Genre: ${movie.genre.join(", ")}`,
-        `IMDb Rating: ${movie.rating}`,
-        `Released: ${movie.year}`,
-        `Directed by: ${movie.director.join(", ")}`,
-        `Actors: ${movie.star.join(", ")}`
+        `<span class="clue-title">Keywords:</span> ${keywords.join(", ")}`,
+        `<span class="clue-title">Genre:</span> ${movie.genre.join(", ")}`,
+        `<span class="clue-title">IMDb Rating:</span> ${movie.rating}`,
+        `<span class="clue-title">Released:</span> ${movie.year}`,
+        `<span class="clue-title">Directed by:</span> ${movie.director.join(", ")}`,
+        `<span class="clue-title">Actors:</span> ${movie.star.join(", ")}`
     ];
 
     if (isCorrect) {
