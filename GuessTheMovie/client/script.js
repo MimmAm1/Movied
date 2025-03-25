@@ -145,7 +145,7 @@ function updateClues() {
 
 // Handle input for autocomplete
 document.getElementById("guess-field").addEventListener("input", function () {
-    const query = this.value.trim().toLowerCase();
+    const query = this.value.trim().toLowerCase();  
     const suggestionsBox = document.getElementById("suggestions-box");
 
     if (query.length < 2) {
