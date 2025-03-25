@@ -85,7 +85,7 @@ async function submitGuess() {
             clues = result.allClues;
             currentClueIndex = clues.length; // Show all clues
             updateClues();
-            showMessage(`✅ Correct! The movie was <strong>${userGuess}</strong>`, "success");
+            showMessage(`<i class="fa-solid fa-check"></i> Correct! The movie was <strong>${userGuess}</strong>`, "success");
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
         } else {
@@ -96,7 +96,7 @@ async function submitGuess() {
             // If the player has guessed after seeing actors, end the game
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
-                showMessage(`❌ Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                showMessage(`<i class="fa-solid fa-xmark"></i> Game over! The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
                 document.getElementById("daily-guess-field").disabled = true;
                 document.getElementById("daily-submit-guess").disabled = true;
                 return;
@@ -115,7 +115,7 @@ async function submitGuess() {
             }
 
             updateClues();
-            showMessage("❌ Wrong guess! Here's another clue.", "error");
+            showMessage(`<i class="fa-solid fa-xmark"></i> Wrong guess! Here's another clue.`, "error");
         }
     } catch (error) {
         console.error("Error submitting guess:", error);
