@@ -34,6 +34,10 @@
     --error-border: color-mix(in srgb, rgb(255, 70, 70) 30%, transparent);
 }
 
+* {
+    font-family: var(--font-satoshi);
+}
+
 ::selection {
     background-color: var(--accent);
     color: var(--text);
