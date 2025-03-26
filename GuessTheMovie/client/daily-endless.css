@@ -34,6 +34,7 @@
 
 .button-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
 }
@@ -109,4 +110,19 @@
 .clue-title {
     color: var(--accent); /* or use a more distinct color like var(--primary) */
     font-weight: 900;
+}
+
+#countdown {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--success-text);
+    margin: 0;
+}
+
+.countdown-text {
+    color: var(--accent);
+}
+
+.countdown-number{
+    font-weight: 700;
 }

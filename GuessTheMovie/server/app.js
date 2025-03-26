@@ -26,7 +26,7 @@ const dbCollectionName = "imdb";
 
 const server = http.createServer(async (req, res) => {
 
-    console.log("Incoming request:", req.method, req.url);
+    // console.log("Incoming request:", req.method, req.url);
     try {
 
         // Anslut till databasen
@@ -41,10 +41,10 @@ const server = http.createServer(async (req, res) => {
 
         // Skapa en URL-objekt
         const requestUrl = new URL(req.url, `http://${hostname}:${port}`);
-        console.log("Parsed request path:", requestUrl.pathname);
+        // console.log("Parsed request path:", requestUrl.pathname);
 
         const pathComponents = requestUrl.pathname.split("/");
-        console.log("Path components:", pathComponents);
+        // console.log("Path components:", pathComponents);
 
         // get a random movie
         if (req.method === "GET" && pathComponents[1] === "random-movie") {
@@ -78,7 +78,7 @@ const server = http.createServer(async (req, res) => {
                 .project({ name: 1, _id: 0 }) // Only return movie names
                 .toArray();
 
-            console.log(`Loaded ${movies.length} movies for autocomplete.`); // ✅ Log movie count
+            // console.log(`Loaded ${movies.length} movies for autocomplete.`);
             return sendResponse(res, 200, "application/json", JSON.stringify(movies));
         }
 
@@ -261,7 +261,7 @@ function mulberry32(seed) { // från github
 function extractKeywords(description) {
     if (!description) return [];
 
-    const doc = nlp(description);
+    // const doc = nlp(description);
 
     const stopwords = new Set([
         "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "from", "has", "he", "her", "his",
@@ -302,7 +302,7 @@ async function checkGuess(collection, movieId, guess, currentClueIndex) {
     ];
 
     if (isCorrect) {
-        console.log("rätt svar");
+        // console.log("rätt svar");
         return {
             success: true,
             message: "Rätt svar!",

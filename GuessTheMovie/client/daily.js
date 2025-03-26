@@ -66,6 +66,8 @@ async function startGame() {
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
             showMessage(savedState.message, savedState.messageType);
+
+            startMidnightCountdown();
         }
 
         updateClues()
@@ -118,8 +120,9 @@ async function submitGuess() {
             currentClueIndex = clues.length; // Show all clues
             updateClues();
             showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
+            startMidnightCountdown();
 
-            document.getElementById('daily-guess-field').value = result.correctAnswer;
+            document.getElementById('daily-guess-field').value = userGuess;
             document.getElementById("daily-guess-field").disabled = true;
             document.getElementById("daily-submit-guess").disabled = true;
 
@@ -131,6 +134,7 @@ async function submitGuess() {
             if (result.correctAnswer) {
                 console.log("Game Over! The correct movie was:", result.correctAnswer);
                 showMessage(`<i class="fa-solid fa-xmark"></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                startMidnightCountdown();
 
                 document.getElementById("daily-guess-field").disabled = true;
                 document.getElementById("daily-submit-guess").disabled = true;
@@ -143,6 +147,7 @@ async function submitGuess() {
                 clues.push(result.nextClue); // Only add the next clue
                 document.getElementById('daily-guess-field').value = '';
                 updateClues(); // Refresh UI
+                guessField.value = ""; // Clear input field
             }
 
             // If this is the last clue (Actors), allow one final guess
@@ -162,8 +167,6 @@ async function submitGuess() {
         console.error("Error submitting guess:", error);
         showMessage("An error occurred while checking your guess.", "error");
     }
-
-    guessField.value = ""; // Clear input field
 }
 
 function saveGameState(message = "", messageType = "", finished = false) {
@@ -190,6 +193,28 @@ function showMessage(message, type) {
 function updateClues() {
     const clueBox = document.getElementById("clues-box-d");
     clueBox.innerHTML = clues.slice(0, currentClueIndex + 1).join("<br>"); // Show all revealed clues
+}
+
+function startMidnightCountdown() {
+    const countdownEl = document.getElementById("countdown");
+    countdownEl.style.display = "block";
+
+    function updateCountdown() {
+        const now = new Date();
+        const midnight = new Date();
+        midnight.setHours(24, 0, 0, 0); // Next midnight
+
+        const diff = midnight - now;
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        countdownEl.innerHTML = `<span class="countdown-text">Refreshes in:</span> <span class="countdown-number">${hours}</span>h <span class="countdown-number">${minutes}</span>m <span class="countdown-number">${seconds}</span>s`;
+    }
+
+    updateCountdown(); // Initial call
+    setInterval(updateCountdown, 1000); // Update every second
 }
 
 // Handle input for autocomplete

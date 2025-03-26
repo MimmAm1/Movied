@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await fetchMovieList(); // Load movie list once
     startGame();
 
-    // Add event listener to the guess button
+    // event listener guess button
     document.getElementById("submit-guess").addEventListener("click", submitGuess);
 
     document.getElementById("next-movie-button").addEventListener("click", () => {
@@ -114,7 +114,7 @@ async function submitGuess() {
             currentClueIndex = clues.length;
             updateClues();
             showMessage(`<i class="fa-solid fa-check"></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
-            document.getElementById('guess-field').value = result.correctAnswer;
+            document.getElementById('guess-field').value = userGuess;
             document.getElementById("guess-field").disabled = true;
             document.getElementById("submit-guess").disabled = true;
 
@@ -149,6 +149,7 @@ async function submitGuess() {
                 clues.push(result.nextClue); // Only add the next clue
                 document.getElementById('guess-field').value = '';
                 updateClues(); // Refresh UI
+                guessField.value = ""; // Clear input field
             }
 
             // If this is the last clue (Actors), allow one final guess
@@ -166,8 +167,6 @@ async function submitGuess() {
         console.error("Error submitting guess:", error);
         showMessage("An error occurred while checking your guess.", "error");
     }
-
-    guessField.value = ""; // Clear input field
 }
 
 // Show messages under the input field
