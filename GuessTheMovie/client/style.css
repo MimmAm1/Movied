@@ -256,7 +256,7 @@ a span {
 }
 
 .guess-input:has(.guess-field:focus) {
-    outline: 1px solid var(--accent);
+    outline: 2px solid var(--accent);
 }
 
 .submit-guess {

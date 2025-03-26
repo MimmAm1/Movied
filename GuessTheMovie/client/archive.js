@@ -7,8 +7,6 @@ let filteredMovies = [];
 let pastMovies = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    document.documentElement.setAttribute("data-theme", savedTheme);
 
     await fetchMovieList();
     await loadPastDailies();
