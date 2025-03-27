@@ -17,7 +17,7 @@ const RATING = 6;
 const VOTES = 300000;
 const YEAR = 1950;
 
-let collection;
+let collection; // make it reusable instead of redefining it every time
 
 const server = http.createServer(async (req, res) => {
     try {
@@ -123,8 +123,9 @@ function sendError(res, statusCode, message) {
     sendResponse(res, statusCode, "application/json", JSON.stringify({ error: message }));
 }
 
-function formatClues(movie, currentClueIndex = 0, oneClueOnly = true) {
+function formatClues(movie, currentClueIndex = 0, oneClueOnly = true) { // default 0 & true
     const keywords = extractKeywords(movie.description);
+    // format for styling in css
     const clues = [
         `<span class="clue-title">Keywords:</span> ${keywords.join(", ")}`,
         `<span class="clue-title">Genre:</span> ${movie.genre.join(", ")}`,
@@ -149,24 +150,7 @@ async function getRandomMovie() {
     };
 }
 
-async function getDailyMovie() {
-    const query = { rating: { $gte: RATING }, year: { $gt: YEAR }, votes: { $gte: VOTES } };
-    const count = await collection.countDocuments(query);
-    if (count === 0) return null;
-
-    const seed = getTodaySeed();
-    const rand = mulberry32(seed);
-    const dailyIndex = Math.floor(rand() * count);
-
-    const movie = await collection.findOne(query, { skip: dailyIndex });
-    if (!movie) return null;
-
-    return {
-        id: movie._id,
-        clues: formatClues(movie),
-        currentClueIndex: 0
-    };
-}
+// validate a guess
 
 async function checkGuess(movieId, guess, currentClueIndex) {
     const movie = await collection.findOne({ _id: movieId });
@@ -191,23 +175,7 @@ async function checkGuess(movieId, guess, currentClueIndex) {
     };
 }
 
-async function getPastDailyChallenges() {
-    const startDate = new Date("2025-03-22");
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const allMovies = await collection.find({ rating: { $gte: RATING }, year: { $gt: YEAR }, votes: { $gte: VOTES } }).toArray();
-    if (allMovies.length === 0) return [];
-
-    const result = [];
-    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
-        const seed = getSeedFromDate(d);
-        const rand = mulberry32(seed);
-        const index = Math.floor(rand() * allMovies.length);
-        result.push({ id: allMovies[index]._id });
-    }
-    return result;
-}
+// keywords to exclude when getting keywords for the first clue
 
 function extractKeywords(description) {
     if (!description) return [];
@@ -215,9 +183,51 @@ function extractKeywords(description) {
     return description.toLowerCase().replace(/[.,!?;()\"]+/g, '').split(/\s+/).filter(word => word.length > 3 && !stopwords.has(word)).slice(0, 5);
 }
 
+// Function to get the daily movie
+
+async function getDailyMovie() {
+    const query = { rating: { $gte: RATING }, year: { $gt: YEAR }, votes: { $gte: VOTES } };
+    const count = await collection.countDocuments(query);
+    if (count === 0) return null;
+
+    const seed = getTodaySeed(); // generate todays seed
+    const rand = mulberry32(seed); // generate random number generator
+    const dailyIndex = Math.floor(rand() * count); // get the daily index
+
+    const movie = await collection.findOne(query, { skip: dailyIndex });
+    if (!movie) return null;
+
+    return {
+        id: movie._id,
+        clues: formatClues(movie),
+        currentClueIndex: 0
+    };
+}
+
+async function getPastDailyChallenges() {
+    const startDate = new Date("2025-03-22"); // starting date of the daily challenges
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const allMovies = await collection.find({ rating: { $gte: RATING }, year: { $gt: YEAR }, votes: { $gte: VOTES } }).toArray();
+    if (allMovies.length === 0) return [];
+
+    const result = [];
+    // get every daily movie since starting date through its seed and mulberry32 movie index
+    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+        const seed = getSeedFromDate(d);
+        const rand = mulberry32(seed);
+        const index = Math.floor(rand() * allMovies.length);
+        result.push({ id: allMovies[index]._id }); // save it and return it
+    }
+    return result;
+}
+
 function getTodaySeed() {
     return getSeedFromDate(new Date());
 }
+
+// function to generate the random seed
 
 function getSeedFromDate(date) {
     const dateStr = date.toISOString().split('T')[0];
@@ -228,6 +238,10 @@ function getSeedFromDate(date) {
     }
     return Math.abs(hash);
 }
+
+// https://github.com/cprosche/mulberry32
+// Mulberry32 PRNG to help generate a random seed based on the date to make the daily movie selection deterministic
+// and the same for everyone by generating the same index for the same date
 
 function mulberry32(seed) {
     return function () {
