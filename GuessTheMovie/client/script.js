@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.documentElement.setAttribute("data-theme", savedTheme);
 });
 
+// navOpen() from public codepen, but has been changed to fit the project
 function navOpen() {
     const navMenu = document.querySelector(".nav-item-container");
     const navIcon = document.getElementById("nav-icon3");
@@ -28,6 +29,7 @@ function navOpen() {
     }
 }
 
+// close nav on click
 function handleOutsideClick(e) {
     const navMenu = document.querySelector(".nav-item-container");
     const navIcon = document.getElementById("nav-icon3");
@@ -40,7 +42,7 @@ function handleOutsideClick(e) {
     }
 }
 
-// theme
+// theme toggle
 
 function toggleTheme() {
     const current = document.documentElement.getAttribute("data-theme");

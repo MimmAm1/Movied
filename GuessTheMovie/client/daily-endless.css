@@ -52,7 +52,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    overflow: hidden; /* ensures no layout shifts */
+    overflow: hidden;
 }
 
 #go-back-button:hover {
@@ -71,7 +71,7 @@
 }
 
 #go-back-button:hover .arrow {
-    transform: translateX(-6px); /* ⬅️ slides left */
+    transform: translateX(-6px);
 }
 
 /* New game */
@@ -107,8 +107,10 @@
     content: '';
 }
 
+/* Clue and countdown styling */
+
 .clue-title {
-    color: var(--accent); /* or use a more distinct color like var(--primary) */
+    color: var(--accent);
     font-weight: 900;
 }
 
@@ -117,12 +119,4 @@
     font-weight: 600;
     color: var(--success-text);
     margin: 0;
-}
-
-.countdown-text {
-    color: var(--accent);
-}
-
-.countdown-number{
-    font-weight: 700;
 }
