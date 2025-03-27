@@ -33,6 +33,20 @@ th {
     font-weight: bold;
 }
 
-tr:nth-child(even) {
-    background: #f9f9f9;
+.highscore-box {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.highscore-box:nth-child(odd) {
+    background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.highscore-box > div {
+    margin: 5px 0;
+}
+
+.user, .score {
+    flex: 1;
 }
