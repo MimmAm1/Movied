@@ -1,16 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="light">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <link rel="stylesheet" href="scoreboard.css">
   <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <script src="script.js"></script>
+
   <title>Scoreboard - Movied</title>
 </head>
+
 <body>
   <div class="navigation">
-    <h2 id="nav-title"><a href="index.html">Movied</a></h2>
-    <button id="nav-menu"><i class="fa-solid fa-bars"></i></button>
+    <h2 id="nav-title"><a href="main.html">Movied</a></h2>
+    <div id="nav-icon3" onclick="navOpen()">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="nav-item-container">
+    <nav class="nav">
+      <ul>
+        <li>
+          <a href="main.html" id="active-page">
+            <span><i class="fa-solid fa-house"></i> </span>
+            <span class="nav-text">Start page</a></span>
+        </li>
+        <li>
+          <a href="daily.html">
+            <span><i class="fa-regular fa-clock"></i> </span>
+            <span class="nav-text">Daily</a>
+        </li></span>
+        <li>
+          <a href="unlimited.html">
+            <span><i class="fa-solid fa-infinity"></i> </span>
+            <span class="nav-text">Unlimited</a>
+        </li></span>
+        <li>
+          <a href="archive.html">
+            <span><i class="fa-solid fa-clock-rotate-left"></i> </span>
+            <span class="nav-text">Past Dailies</a>
+        </li></span>
+        <li>
+          <a onclick="toggleTheme()">
+            <span><i class="fa-solid fa-brush"></i> </span>
+            <span class="nav-text">Toggle Theme</a>
+        </li></span>
+      </ul>
+    </nav>
   </div>
 
   <div class="scoreboard-container">
@@ -39,4 +82,5 @@
 
   <script src="scripts.js"></script>
 </body>
+
 </html>

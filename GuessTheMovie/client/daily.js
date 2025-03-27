@@ -26,6 +26,7 @@ function getSavedGameState() {
 }
 
 function saveGameState(message = "", type = "", finished = false) {
+    const timeLeft = getTimeUntilMidnight();
     localStorage.setItem("dailyGameState", JSON.stringify({
         date: getTodayKey(),
         movieId: currentMovieId,
@@ -33,7 +34,8 @@ function saveGameState(message = "", type = "", finished = false) {
         currentClueIndex,
         message,
         messageType: type,
-        finished
+        finished,
+        countdown: timeLeft
     }));
 }
 
@@ -57,39 +59,6 @@ async function fetchMovieList() {
     }
 }
 
-function setupAutocomplete() {
-    const input = document.getElementById(guessFieldId);
-    const box = document.getElementById("suggestions-box-d");
-
-    input.addEventListener("input", function () {
-        const query = this.value.trim().toLowerCase();
-        if (query.length < 2) return (box.innerHTML = "");
-
-        const matches = filteredMovies.filter(m => m.name.toLowerCase().startsWith(query)).slice(0, 10);
-        box.innerHTML = matches.map(m => `<div class="suggestion">${m.name}</div>`).join("");
-
-        box.querySelectorAll(".suggestion").forEach(s => {
-            s.onclick = () => {
-                input.value = s.innerText;
-                box.innerHTML = "";
-            };
-        });
-    });
-
-    input.addEventListener("keydown", function (e) {
-        const first = document.querySelector(".suggestion");
-        if (e.key === "Enter") {
-            e.preventDefault();
-            if (first) {
-                input.value = first.textContent;
-                box.innerHTML = "";
-            } else {
-                document.getElementById(submitButtonId).click();
-            }
-        }
-    });
-}
-
 async function startGame() {
     const saved = getSavedGameState();
     const dailyKey = getTodayKey();
@@ -104,6 +73,12 @@ async function startGame() {
             document.getElementById(guessFieldId).disabled = true;
             document.getElementById(submitButtonId).disabled = true;
             showMessage(saved.message, saved.messageType);
+
+            if (saved.countdown) {
+                startCountdown(saved.countdown);
+            } else {
+                startCountdown(getTimeUntilMidnight());
+            }
         }
         return;
     }
@@ -141,6 +116,7 @@ async function submitGuess() {
             currentClueIndex = clues.length - 1;
             updateClues();
             showMessage(`<i class='fa-solid fa-check'></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success");
+            startCountdown(getTimeUntilMidnight());
             input.disabled = true;
             document.getElementById(submitButtonId).disabled = true;
             saveGameState(`<i class='fa-solid fa-check'></i> <strong>Correct!</strong> The movie was <strong>${userGuess}</strong>`, "success", true);
@@ -148,6 +124,7 @@ async function submitGuess() {
             currentClueIndex = result.currentClueIndex;
             if (result.correctAnswer) {
                 showMessage(`<i class='fa-solid fa-xmark'></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error");
+                startCountdown(getTimeUntilMidnight());
                 input.disabled = true;
                 document.getElementById(submitButtonId).disabled = true;
                 saveGameState(`<i class='fa-solid fa-xmark'></i> <strong>Game over!</strong> The correct answer was: <strong>${result.correctAnswer}</strong>`, "error", true);
@@ -169,6 +146,68 @@ async function submitGuess() {
         showMessage("An error occurred while checking your guess.", "error");
     }
     input.value = "";
+}
+
+function setupAutocomplete() {
+    const input = document.getElementById(guessFieldId);
+    const box = document.getElementById("suggestions-box-d");
+
+    input.addEventListener("input", function () {
+        const query = this.value.trim().toLowerCase();
+        if (query.length < 2) return (box.innerHTML = "");
+
+        const matches = filteredMovies.filter(m => m.name.toLowerCase().startsWith(query)).slice(0, 10);
+        box.innerHTML = matches.map(m => `<div class="suggestion">${m.name}</div>`).join("");
+
+        box.querySelectorAll(".suggestion").forEach(s => {
+            s.onclick = () => {
+                input.value = s.innerText;
+                box.innerHTML = "";
+            };
+        });
+    });
+
+    input.addEventListener("keydown", function (e) {
+        const first = document.querySelector(".suggestion");
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (first) {
+                input.value = first.textContent;
+                box.innerHTML = "";
+            } else {
+                document.getElementById(submitButtonId).click();
+            }
+        }
+    });
+}
+
+function getTimeUntilMidnight() {
+    const now = new Date();
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+    return Math.floor((nextMidnight - now) / 1000);
+}
+
+function formatCountdown(seconds) {
+    const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const secs = String(seconds % 60).padStart(2, '0');
+    return `${hrs}:${mins}:${secs}`;
+}
+
+function startCountdown(seconds) {
+    const display = document.getElementById("countdown");
+    display.style.display = "block";
+    display.textContent = `Next daily in: ${formatCountdown(seconds)}`;
+    const interval = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+            clearInterval(interval);
+            display.textContent = "New daily available!";
+        } else {
+            display.textContent = `Next daily in: ${formatCountdown(seconds)}`;
+        }
+    }, 1000);
 }
 
 document.getElementById(submitButtonId).addEventListener("click", submitGuess);
